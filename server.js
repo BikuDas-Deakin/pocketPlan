@@ -9,7 +9,15 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ===== Middleware =====
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://pocket-plan-seven.vercel.app', // frontend URL
+    'http://localhost:3000'                 // local dev
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // allows sending cookies if needed
+}));
 app.use(express.json());
 // app.use(express.static('public'));
 
