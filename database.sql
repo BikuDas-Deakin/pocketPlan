@@ -1,5 +1,5 @@
 -- PocketPlan PostgreSQL Database Schema
--- Version 1.0.0
+-- Version 1.1.0 (Guest Support)
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -9,11 +9,12 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ============================================
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
     name VARCHAR(100) NOT NULL,
     location VARCHAR(100),
     is_premium BOOLEAN DEFAULT FALSE,
+    is_guest BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -188,89 +189,17 @@ INSERT INTO government_benefits (name, category, description, amount_min, amount
 ('Family Tax Benefit', 'family', 'Financial support for families with children', 100, 300, 80000, 'https://www.servicesaustralia.gov.au/family-tax-benefit', true);
 
 -- ============================================
--- VIEWS FOR ANALYTICS
--- ============================================
-
--- Monthly expense summary by category
-CREATE OR REPLACE VIEW monthly_expense_summary AS
-SELECT 
-    user_id,
-    EXTRACT(YEAR FROM date) as year,
-    EXTRACT(MONTH FROM date) as month,
-    category,
-    SUM(amount) as total_amount,
-    COUNT(*) as transaction_count,
-    AVG(amount) as avg_amount
-FROM expenses
-GROUP BY user_id, year, month, category;
-
--- Budget vs actual spending
-CREATE OR REPLACE VIEW budget_vs_actual AS
-SELECT 
-    b.user_id,
-    b.month,
-    b.year,
-    b.category,
-    b.amount as budget_amount,
-    COALESCE(SUM(e.amount), 0) as actual_amount,
-    b.amount - COALESCE(SUM(e.amount), 0) as remaining,
-    CASE 
-        WHEN COALESCE(SUM(e.amount), 0) > b.amount THEN 'over'
-        WHEN COALESCE(SUM(e.amount), 0) >= b.amount * 0.9 THEN 'warning'
-        ELSE 'good'
-    END as status
-FROM budgets b
-LEFT JOIN expenses e ON 
-    b.user_id = e.user_id AND 
-    b.category = e.category AND
-    EXTRACT(MONTH FROM e.date) = b.month AND
-    EXTRACT(YEAR FROM e.date) = b.year
-GROUP BY b.user_id, b.month, b.year, b.category, b.amount;
-
--- ============================================
--- FUNCTIONS
--- ============================================
-
--- Function to update updated_at timestamp
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
--- Apply updated_at trigger to all tables
-CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_expenses_updated_at BEFORE UPDATE ON expenses
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_budgets_updated_at BEFORE UPDATE ON budgets
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON posts
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_government_benefits_updated_at BEFORE UPDATE ON government_benefits
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_savings_goals_updated_at BEFORE UPDATE ON savings_goals
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_user_settings_updated_at BEFORE UPDATE ON user_settings
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- ============================================
 -- SAMPLE DATA FOR DEMO
 -- ============================================
 
--- Create demo user (password: demo123)
-INSERT INTO users (email, password, name, location, is_premium) VALUES
-('demo@pocketplan.com', '$2b$10$rQJ5gZYKJ5L5Z5Z5Z5Z5ZeqGqGqGqGqGqGqGqGqGqGqGqGqGqGqG', 'Alex Johnson', 'Melbourne, VIC', true);
+-- Create demo registered user (password: demo123)
+INSERT INTO users (email, password, name, location, is_premium, is_guest) VALUES
+('demo@pocketplan.com', '$2b$10$rQJ5gZYKJ5L5Z5Z5Z5Z5ZeqGqGqGqGqGqGqGqGqGqGqGqGqGqG', 'Alex Johnson', 'Melbourne, VIC', true, false);
 
--- Get the demo user ID (will be 1 if this is first user)
+-- Insert sample guest user
+INSERT INTO users (name, is_guest) VALUES
+('Guest_ABC123', true);
+
 -- Insert sample expenses for demo user
 INSERT INTO expenses (user_id, amount, category, description, date, payment_method) VALUES
 (1, 12.50, 'food', 'Lunch - Pizza Place', CURRENT_DATE, 'card'),
@@ -291,20 +220,34 @@ INSERT INTO posts (user_id, content, location) VALUES
 (1, 'Found a great trick: buy groceries after 7pm for 50% off markdown items at Woolies. Saved $40 this week!', 'Melbourne, VIC');
 
 -- ============================================
--- GRANT PERMISSIONS (adjust as needed)
+-- TRIGGERS FOR UPDATED_AT
 -- ============================================
 
--- Example: Grant permissions to application user
--- GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO pocketplan_app;
--- GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO pocketplan_app;
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
 
--- ============================================
--- PERFORMANCE OPTIMIZATION
--- ============================================
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Analyze tables for query optimization
-ANALYZE users;
-ANALYZE expenses;
-ANALYZE budgets;
-ANALYZE posts;
-ANALYZE government_benefits;
+CREATE TRIGGER update_expenses_updated_at BEFORE UPDATE ON expenses
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_budgets_updated_at BEFORE UPDATE ON budgets
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON posts
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_government_benefits_updated_at BEFORE UPDATE ON government_benefits
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_savings_goals_updated_at BEFORE UPDATE ON savings_goals
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_settings_updated_at BEFORE UPDATE ON user_settings
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
