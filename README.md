@@ -1,17 +1,23 @@
-# PocketPlan - Smart Cost of Living Management
+# PocketPlan - Smart Financial Management Platform
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![React](https://img.shields.io/badge/React-18.x-61dafb)
+![Node](https://img.shields.io/badge/Node-%3E%3D18.0.0-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
 
-**Team ASBOT** - SIT726 Innovation & Entrepreneurship Project
+**Student:** Bisheshwar Das (s225010182)  
+**Unit:** SIT317/SIT726 - Information Technology Innovations and Entrepreneurship  
+**Task:** 8.2HD High-Fidelity Prototype
 
-A mobile-first web application designed to help Australians manage their cost of living through AI-powered expense tracking, community-driven insights, and government benefit integration.
+A modern web-based financial management platform designed to help Australians take control of their finances through intelligent income and expense tracking, real-time insights, and intuitive visualizations.
+
+🔗 **Live Demo:** [https://pocket-plan-seven.vercel.app/](https://pocket-plan-seven.vercel.app/)
 
 ---
 
 ## 📋 Table of Contents
 
+- [Overview](#overview)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
@@ -19,76 +25,143 @@ A mobile-first web application designed to help Australians manage their cost of
 - [Deployment](#deployment)
 - [API Documentation](#api-documentation)
 - [Database Schema](#database-schema)
-- [Contributing](#contributing)
-- [Team](#team)
+- [Design System](#design-system)
+- [Testing Strategy](#testing-strategy)
+- [Future Enhancements](#future-enhancements)
+
+---
+
+## 🎯 Overview
+
+### Problem Statement
+
+The rising cost of living in Australia has placed significant financial pressure on individuals and families. Many people struggle to track their expenses, manage budgets effectively, and optimize their spending patterns. Existing financial management tools often lack personalization, are too complex for everyday use, or fail to provide actionable insights.
+
+### Solution
+
+PocketPlan is a web-based financial management platform that provides users with an intuitive interface to record transactions, visualize spending patterns, and gain insights into their financial health. Unlike generic budgeting applications, PocketPlan focuses on **simplicity and accessibility** while providing powerful features for comprehensive financial management.
+
+### Target Audience
+
+- Young professionals managing their first independent finances
+- Families seeking to optimize household budgets
+- Students tracking limited income and expenses
+- Anyone looking for a simple, effective personal finance tool
 
 ---
 
 ## ✨ Features
 
 ### Core Functionality
-- **Expense Tracking** - Quick-add expenses with category tagging
-- **Budget Management** - Set and monitor category-based budgets
-- **AI-Powered Insights** - Machine learning recommendations for cost savings
-- **OCR Receipt Scanning** - Automated expense capture from receipts
-- **Visual Analytics** - Interactive charts and spending breakdowns
 
-### Community Features
-- **Community Forum** - Share cost-saving tips with other users
-- **Location-Based Advice** - Find local deals and recommendations
-- **Peer Support** - Learn from real experiences
+#### 🔐 Secure Authentication
+- User registration and login with JWT authentication
+- Password hashing with bcrypt
+- Protected routes and automatic token refresh
+- Seamless experience across devices
 
-### Government Integration
-- **Benefits Discovery** - Access 23+ Australian government support programs
-- **Eligibility Checker** - Quick assessment of benefit qualification
-- **Direct Application Links** - Streamlined access to official resources
+#### 📊 Comprehensive Dashboard
+- **Real-time financial overview** with balance calculation
+- **Dual tracking:** Both income and expenses displayed prominently
+- Total balance (income - expenses)
+- Total income with green positive indicators
+- Total expenses with red negative indicators
+- Recent transactions list with category icons
+- Quick-add transaction button for immediate access
 
-### Additional Features
-- **Cross-Platform** - Mobile-first design, works on all devices
-- **Privacy-First** - Guest mode with local data storage
-- **Progressive Web App** - Install as native app on mobile
+#### ➕ Transaction Management
+- **Income & Expense Recording** with streamlined interface
+- Toggle between transaction types
+- Category selection from predefined options
+- Description field for transaction details
+- Date picker for backdating transactions
+- Form validation and error handling
+- Immediate backend synchronization
+
+#### 📈 Financial Insights & Analytics
+- Data visualization with charts and graphs
+- Category-wise spending breakdown
+- Income vs. expense comparisons
+- Trend analysis over time periods
+- Summary statistics and key metrics
+- Interactive elements for detailed exploration
+
+#### 💰 Budget Management (Framework)
+- Set spending limits by category
+- Budget vs. actual spending comparisons
+- Alert system for approaching budget limits
+
+#### 💡 Money-Saving Tips
+- Curated financial advice and tips
+- Context-aware suggestions
+- Community-driven knowledge sharing potential
+
+#### 🏛️ Government Support Information
+- Information on available rebates and subsidies
+- Eligibility checkers for support programs
+- Direct links to government resources
+
+#### ⚙️ Settings & Profile
+- User profile management
+- Application preferences
+- Help and support resources
 
 ---
 
 ## 🛠 Tech Stack
 
 ### Frontend
-- **HTML5 / CSS3** - Semantic markup and modern styling
-- **Bootstrap 5** - Responsive component framework
-- **Vanilla JavaScript** - No framework dependencies
-- **Bootstrap Icons** - Comprehensive icon library
+- **React.js** - Modern JavaScript library for building user interfaces
+- **CSS3** - Custom styling with modern features
+- **React Router** - Client-side routing for seamless navigation
+- **Axios** - HTTP client for API requests
 
 ### Backend
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web application framework
-- **PostgreSQL** - Relational database
-- **JWT** - Secure authentication
-- **Bcrypt** - Password hashing
+- **Node.js** - JavaScript runtime environment
+- **Express.js** - Lightweight, scalable web framework
+- **JWT** - JSON Web Tokens for secure authentication
+- **Bcrypt** - Password hashing for security
 
-### Future Enhancements
-- **Flutter** - Native mobile apps (iOS/Android)
-- **React.js** - Enhanced web interface
-- **TensorFlow** - Advanced ML models
-- **Docker** - Containerization
+### Database
+- **Supabase (PostgreSQL)** - Reliable, scalable database with real-time capabilities
+- Structured storage for users, transactions, and categories
+
+### Development & Deployment
+- **Vercel** - Frontend hosting with automatic deployments
+- **Render** - Backend API hosting with continuous deployment
+- **Docker** - Container configuration for consistent environments
+- **Git/GitHub** - Version control and collaboration
 
 ---
 
 ## 📁 Project Structure
 
 ```
-pocketplan/
-├── public/
-│   ├── index.html          # Main frontend application
-│   ├── css/
-│   │   └── styles.css      # Custom styles (if separated)
-│   └── js/
-│       └── app.js          # Frontend JavaScript (if separated)
-├── server.js               # Express API server
-├── database.sql            # PostgreSQL schema
-├── package.json            # Node dependencies
-├── .env.example            # Environment template
-├── .gitignore              # Git ignore rules
-└── README.md               # This file
+SIT726_8.2HD_High-fidelity Prototype/
+├── frontend/
+│   └── src/
+│       ├── screens/              # Page components
+│       │   ├── Welcome.jsx       # Authentication screen
+│       │   ├── Dashboard.jsx     # Main financial overview
+│       │   ├── AddTransaction.jsx # Income/expense recording
+│       │   ├── Insights.jsx      # Analytics and visualizations
+│       │   ├── Budget.jsx        # Budget management
+│       │   ├── Tips.jsx          # Money-saving tips
+│       │   ├── Government.jsx    # Government support info
+│       │   └── More.jsx          # Settings and profile
+│       ├── components/           # Reusable components
+│       │   └── BottomNav.jsx     # Navigation bar
+│       ├── hooks/                # Custom React hooks
+│       ├── api/                  # Backend API integration
+│       ├── App.js                # Main application
+│       └── index.js              # Entry point
+├── server.js                     # Express backend server
+├── database.sql                  # PostgreSQL schema
+├── Dockerfile                    # Container configuration
+├── docker-compose.yml            # Multi-container setup
+├── deploy.sh                     # Deployment automation
+├── package.json                  # Dependencies
+└── README.md                     # This file
 ```
 
 ---
@@ -97,19 +170,26 @@ pocketplan/
 
 ### Prerequisites
 - Node.js >= 18.0.0
-- PostgreSQL >= 14
 - npm >= 9.0.0
+- PostgreSQL >= 14 (or Supabase account)
+- Git
 
 ### Installation
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/team-asbot/pocketplan.git
-cd pocketplan
+git clone https://github.com/BikuDas-Deakin/pocketPlan.git
+cd pocketPlan
 ```
 
 2. **Install dependencies**
 ```bash
+# Install frontend dependencies
+cd frontend
+npm install
+
+# Install backend dependencies
+cd ..
 npm install
 ```
 
@@ -121,105 +201,99 @@ createdb pocketplan
 # Run schema
 psql pocketplan < database.sql
 
-# Or use npm script
-npm run db:setup
+# Or configure Supabase connection
 ```
 
-4. **Configure environment**
+4. **Configure environment variables**
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+# Backend (.env)
+PORT=5000
+DATABASE_URL=your_postgresql_connection_string
+JWT_SECRET=your_secret_key_here
+NODE_ENV=development
+
+# Frontend (.env)
+REACT_APP_API_URL=http://localhost:5000
 ```
 
-5. **Start development server**
+5. **Start development servers**
+
+**Backend:**
 ```bash
 npm run dev
+# Server runs on http://localhost:5000
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm start
+# App opens on http://localhost:3000
 ```
 
 6. **Access application**
 ```
 Frontend: http://localhost:3000
-API: http://localhost:3000/api
-```
-
-### Demo Credentials
-```
-Email: demo@pocketplan.com
-Password: demo123
+Backend API: http://localhost:5000/api
 ```
 
 ---
 
 ## 🌐 Deployment
 
-### Deploy to Railway (Recommended)
+### Deploy to Vercel (Frontend)
 
-1. **Create Railway account** at [railway.app](https://railway.app)
-
-2. **Install Railway CLI**
+1. **Install Vercel CLI**
 ```bash
-npm install -g @railway/cli
-railway login
+npm install -g vercel
 ```
 
-3. **Initialize project**
+2. **Deploy frontend**
 ```bash
-railway init
+cd frontend
+vercel
 ```
 
-4. **Add PostgreSQL**
-```bash
-railway add postgresql
+3. **Configure environment variables** in Vercel dashboard
+```
+REACT_APP_API_URL=https://your-backend-url.onrender.com
 ```
 
-5. **Set environment variables**
-```bash
-railway variables set JWT_SECRET=your-secret-key
-railway variables set NODE_ENV=production
-```
+### Deploy to Render (Backend)
 
-6. **Deploy**
-```bash
-railway up
-```
-
-### Deploy to Render
-
-1. Create new Web Service on [render.com](https://render.com)
+1. Create new **Web Service** on [render.com](https://render.com)
 2. Connect your GitHub repository
 3. Configure:
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-4. Add PostgreSQL database
-5. Set environment variables
-6. Deploy
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+   - **Environment Variables:**
+     - `DATABASE_URL`
+     - `JWT_SECRET`
+     - `NODE_ENV=production`
+4. Deploy
 
-### Deploy to Heroku
+### Using Docker
 
 ```bash
-# Install Heroku CLI
-heroku login
+# Build images
+docker-compose build
 
-# Create app
-heroku create pocketplan-app
+# Start containers
+docker-compose up -d
 
-# Add PostgreSQL
-heroku addons:create heroku-postgresql:mini
-
-# Set environment variables
-heroku config:set JWT_SECRET=your-secret-key
-heroku config:set NODE_ENV=production
-
-# Deploy
-git push heroku main
-
-# Run database migrations
-heroku pg:psql < database.sql
+# Stop containers
+docker-compose down
 ```
 
 ---
 
 ## 📡 API Documentation
+
+### Base URL
+```
+Production: https://pocketplan-backend.onrender.com/api
+Development: http://localhost:5000/api
+```
 
 ### Authentication Endpoints
 
@@ -235,10 +309,9 @@ Content-Type: application/json
 }
 ```
 
-**Response:**
+**Response (201):**
 ```json
 {
-  "message": "User registered successfully",
   "token": "jwt-token-here",
   "user": {
     "id": 1,
@@ -259,288 +332,353 @@ Content-Type: application/json
 }
 ```
 
-### Expense Endpoints
+**Response (200):**
+```json
+{
+  "token": "jwt-token-here",
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
 
-#### Get All Expenses
+### Transaction Endpoints
+
+#### Get All Transactions
 ```http
-GET /api/expenses
+GET /api/transactions
 Authorization: Bearer {token}
 ```
 
-#### Create Expense
+**Response (200):**
+```json
+{
+  "transactions": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "type": "expense",
+      "amount": 45.50,
+      "category": "Food & Dining",
+      "description": "Groceries",
+      "date": "2025-09-29",
+      "created_at": "2025-09-29T10:30:00Z"
+    }
+  ]
+}
+```
+
+#### Create Transaction
 ```http
-POST /api/expenses
+POST /api/transactions
 Authorization: Bearer {token}
 Content-Type: application/json
 
 {
+  "type": "expense",
   "amount": 45.50,
-  "category": "food",
+  "category": "Food & Dining",
   "description": "Groceries",
-  "date": "2024-12-15",
-  "payment_method": "card"
+  "date": "2025-09-29"
 }
 ```
 
-#### Update Expense
+#### Update Transaction
 ```http
-PUT /api/expenses/:id
+PUT /api/transactions/:id
 Authorization: Bearer {token}
 Content-Type: application/json
 
 {
   "amount": 50.00,
-  "category": "food",
+  "category": "Food & Dining",
   "description": "Updated groceries"
 }
 ```
 
-#### Delete Expense
+#### Delete Transaction
 ```http
-DELETE /api/expenses/:id
+DELETE /api/transactions/:id
 Authorization: Bearer {token}
 ```
 
-#### Get Expense Statistics
+### Insights Endpoints
+
+#### Get Financial Insights
 ```http
-GET /api/expenses/stats/summary?month=12&year=2024
+GET /api/insights
 Authorization: Bearer {token}
 ```
 
-### Budget Endpoints
-
-#### Get Budgets
-```http
-GET /api/budgets
-Authorization: Bearer {token}
-```
-
-#### Set Budget
-```http
-POST /api/budgets
-Authorization: Bearer {token}
-Content-Type: application/json
-
+**Response (200):**
+```json
 {
-  "category": "food",
-  "amount": 600,
-  "month": 12,
-  "year": 2024
+  "totalIncome": 5000.00,
+  "totalExpenses": 3500.00,
+  "balance": 1500.00,
+  "categoryBreakdown": [
+    {
+      "category": "Food & Dining",
+      "amount": 800.00,
+      "percentage": 22.86
+    }
+  ],
+  "monthlyTrend": []
 }
-```
-
-### Community Endpoints
-
-#### Get Posts
-```http
-GET /api/community/posts?limit=20&offset=0
-```
-
-#### Create Post
-```http
-POST /api/community/posts
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "content": "Great tip: buy groceries after 7pm for discounts!",
-  "location": "Melbourne, VIC"
-}
-```
-
-#### Like Post
-```http
-POST /api/community/posts/:id/like
-Authorization: Bearer {token}
-```
-
-### Benefits Endpoints
-
-#### Get All Benefits
-```http
-GET /api/benefits
-```
-
-#### Check Eligibility
-```http
-POST /api/benefits/check-eligibility
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "income": 45000,
-  "age": 35,
-  "location": "VIC",
-  "household_size": 2
-}
-```
-
-### AI Insights Endpoints
-
-#### Get AI Insights
-```http
-GET /api/insights/ai
-Authorization: Bearer {token}
 ```
 
 ---
 
 ## 🗃 Database Schema
 
-### Key Tables
+### Tables
 
-**users** - User accounts and profiles
+#### users
 ```sql
-id, email, password, name, location, is_premium, created_at, updated_at
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  name VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
-**expenses** - Transaction records
+#### transactions
 ```sql
-id, user_id, amount, category, description, date, payment_method, receipt_url, created_at
+CREATE TABLE transactions (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  type VARCHAR(20) CHECK (type IN ('income', 'expense')),
+  amount DECIMAL(10, 2) NOT NULL,
+  category VARCHAR(100) NOT NULL,
+  description TEXT,
+  date DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
-**budgets** - Budget allocations
+#### categories
 ```sql
-id, user_id, category, amount, month, year, created_at
+CREATE TABLE categories (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) UNIQUE NOT NULL,
+  type VARCHAR(20) CHECK (type IN ('income', 'expense')),
+  icon VARCHAR(50)
+);
 ```
-
-**posts** - Community forum posts
-```sql
-id, user_id, content, location, created_at
-```
-
-**government_benefits** - Available support programs
-```sql
-id, name, category, description, amount_min, amount_max, income_threshold, application_url
-```
-
-**ai_insights** - ML-generated recommendations
-```sql
-id, user_id, insight_type, category, message, potential_savings, status
-```
-
-### Views
-
-- `monthly_expense_summary` - Aggregated spending by category
-- `budget_vs_actual` - Budget compliance tracking
 
 ---
 
-## 🧪 Testing
+## 🎨 Design System
 
-### Run Tests
-```bash
-npm test
+### Color Palette
+
+**Primary Colors:**
+- **Primary Blue:** `#1E3A8A` - Main brand color, buttons, navigation
+- **Success Green:** `#10B981` - Income, savings, positive actions
+- **Warning Orange:** `#F59E0B` - Warnings and budget alerts
+- **Neutral Gray:** `#6B7280` - Secondary text and UI elements
+
+**Background Colors:**
+- **White:** `#FFFFFF` - Primary content areas
+- **Light Gray:** `#F0F2F5` - App background
+- **Card White:** `#E5E7EB` - Card borders
+- **Light Blue:** `#F0F7FF` - Accent backgrounds
+
+**Gradients:**
+- **Green Gradient:** `linear-gradient(135deg, #ECFDF5, #D1FAE5)` - Savings
+- **Blue Gradient:** `linear-gradient(135deg, #F0F7FF, #E6F3FF)` - Features
+
+### Typography
+
+**Font Family:** System font stack
+```css
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 ```
 
-### Manual Testing Checklist
+**Text Hierarchy:**
+- **Heading Large:** 24px, Bold - Page titles
+- **Heading Medium:** 20px, Semi-bold - Section headings
+- **Body Text:** 16px, Regular - Primary content
+- **Caption:** 14px, Regular - Secondary information
+- **Button Text:** 16px, Semi-bold - Call-to-action buttons
 
-**Authentication**
-- [ ] User registration works
-- [ ] Login works
-- [ ] JWT tokens are generated
-- [ ] Protected routes require authentication
+### UI Components
 
-**Expenses**
-- [ ] Can create expense
-- [ ] Can view all expenses
-- [ ] Can update expense
-- [ ] Can delete expense
-- [ ] Statistics calculate correctly
+**Cards:**
+- Border radius: 12px
+- Border: 1px solid #E5E7EB
+- Padding: 20px
+- No shadows (flat design)
 
-**Budgets**
-- [ ] Can set budget
-- [ ] Budget tracking works
-- [ ] Warnings show when over budget
+**Buttons:**
+- Primary: Navy blue background, white text
+- Secondary: Light gray background, dark text
+- Action: Green background for save actions
+- Padding: 15px vertical
+- Border radius: 8px
 
-**Community**
-- [ ] Can view posts
-- [ ] Can create post
-- [ ] Can like posts
-
-**Benefits**
-- [ ] Benefits list displays
-- [ ] Eligibility checker works
+**Forms:**
+- Input border: 2px solid #E5E7EB
+- Focus border: 2px solid #1E3A8A
+- Padding: 15px
+- Border radius: 8px
 
 ---
 
-## 🔒 Security Considerations
+## 🧪 Testing Strategy
 
-- Passwords hashed with bcrypt (10 rounds)
-- JWT tokens for stateless authentication
-- SQL injection protection via parameterized queries
-- CORS configured for allowed origins
-- Rate limiting on API endpoints
-- Input validation on all endpoints
-- HTTPS required in production
+### Testing Objectives
+1. **Functionality** - All features work as intended
+2. **Usability** - Interface is intuitive and user-friendly
+3. **Security** - User data is protected
+4. **Performance** - Application responds quickly
+5. **Compatibility** - Works across different devices and browsers
+
+### Functional Testing Checklist
+
+**Authentication:**
+- [x] User registration with valid data
+- [x] Login with correct credentials
+- [x] Error handling for incorrect credentials
+- [x] JWT token generation and validation
+- [x] Protected route access control
+
+**Transaction Management:**
+- [x] Add income transactions
+- [x] Add expense transactions
+- [x] Transaction data persistence
+- [x] Real-time dashboard updates
+- [x] Category selection
+
+**Dashboard:**
+- [x] Correct balance calculation
+- [x] Accurate income display
+- [x] Accurate expense display
+- [x] Recent transactions list
+
+### Usability Testing
+
+**Test Scenarios:**
+1. Register new account and complete first login
+2. Add expense transaction with category
+3. Record income transaction
+4. Review dashboard financial summary
+5. View insights and analytics
+6. Navigate between sections
+
+**Evaluation Metrics:**
+- Task completion rate
+- Time to complete tasks
+- Number of errors
+- User satisfaction (1-5 scale)
+- Net Promoter Score (NPS)
+
+### Cross-Browser Testing
+
+**Browsers:**
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+**Devices:**
+- Desktop (1920x1080, 1366x768)
+- Tablet (iPad, Android tablet)
+- Mobile (iPhone, Android phone)
+
+### Performance Testing
+
+**Target Metrics:**
+- Page load time: < 3 seconds
+- Time to interactive: < 5 seconds
+- API response time: < 500ms
+
+**Tools:**
+- Chrome DevTools Lighthouse
+- Network tab monitoring
+- Performance profiling
 
 ---
 
 ## 🚧 Future Enhancements
 
-### Phase 2 (Q1 2025)
-- [ ] Flutter mobile apps (iOS/Android)
-- [ ] Real OCR integration (Google Vision API)
-- [ ] Open Banking API integration
-- [ ] Advanced ML models (TensorFlow)
-- [ ] Push notifications
-- [ ] Email reports
+### Planned Features
 
-### Phase 3 (Q2 2025)
-- [ ] Real-time chat in community
-- [ ] Gamification and achievements
+**Phase 1:**
+- [ ] Complete budget management implementation with alerts
+- [ ] Receipt scanning with OCR integration
+- [ ] Recurring transaction support
+- [ ] PDF reports and CSV export
+- [ ] Multi-currency support
+
+**Phase 2:**
+- [ ] AI-powered insights with predictive analytics
+- [ ] Personalized recommendations
+- [ ] Community forum for sharing tips
 - [ ] Bill payment reminders
 - [ ] Subscription tracking
-- [ ] Export to CSV/PDF
-- [ ] Multi-currency support
+
+**Phase 3:**
+- [ ] Native mobile apps (iOS/Android)
+- [ ] Real-time notifications
+- [ ] Open Banking API integration
+- [ ] Gamification and achievements
+- [ ] Family account sharing
 
 ---
 
-## 👥 Team ASBOT
+## 🔒 Security Features
 
-- **Thoran Kumar** - Full-stack Developer
-- **Akashdeep Singh** - Backend & Database
-- **Bishewar Das** - Frontend & UX
-- **Arun** - AI/ML Integration
-- **Ojusvi Wadhwa** - Community Features
-- **Shyam Kumar** - Government API Integration
-
-**Institution:** Deakin University  
-**Unit:** SIT726 - Information Technology Innovations and Entrepreneurship  
-**Trimester:** T3 2024
+- ✅ Password hashing with bcrypt (10 rounds)
+- ✅ JWT token-based authentication
+- ✅ SQL injection protection via parameterized queries
+- ✅ CORS configured for allowed origins
+- ✅ Input validation on all endpoints
+- ✅ HTTPS required in production
+- ✅ Secure token storage
 
 ---
 
 ## 📝 License
 
-MIT License - see LICENSE file for details
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
-
----
-
-## 📧 Contact
-
-Project Link: [https://github.com/team-asbot/pocketplan](https://github.com/team-asbot/pocketplan)
-
-For support: support@pocketplan.com
+MIT License - This project is open source and available for educational purposes.
 
 ---
 
 ## 🙏 Acknowledgments
 
-- Services Australia for government benefits data
-- Bootstrap team for the excellent framework
-- Deakin University for project support
-- Australian community for cost-of-living insights
+- **Deakin University** - For project guidance and support
+- **React Community** - For excellent documentation and resources
+- **Vercel & Render** - For reliable hosting platforms
+- **Supabase** - For powerful database services
+- **Australian Community** - For insights on cost-of-living challenges
 
 ---
-# pocketPlan
+
+## 📧 Contact
+
+**Student:** Bisheshwar Das  
+**Student ID:** s225010182  
+**Email:** bisheshwdar@gmail.com  
+**GitHub:** [https://github.com/BikuDas-Deakin/pocketPlan](https://github.com/BikuDas-Deakin/pocketPlan)
+
+---
+
+## 📚 References
+
+- React Documentation: [https://react.dev/](https://react.dev/)
+- Node.js Documentation: [https://nodejs.org/](https://nodejs.org/)
+- Express.js Documentation: [https://expressjs.com/](https://expressjs.com/)
+- Supabase Documentation: [https://supabase.com/docs](https://supabase.com/docs)
+- Services Australia: [https://www.servicesaustralia.gov.au/](https://www.servicesaustralia.gov.au/)
+
+---
+
+**Version:** 1.0.0  
+**Last Updated:** September 29, 2025  
+**Status:** Production Ready ✅
