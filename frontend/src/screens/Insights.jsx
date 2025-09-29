@@ -1,16 +1,8 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/api";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 
 const Insights = ({ navigateTo }) => {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState([]); // incomes + expenses
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -27,7 +19,7 @@ const Insights = ({ navigateTo }) => {
         api.expenses.getAll(),
         api.budgets.getAll(),
       ]);
-      setTransactions(expensesRes.expenses || []);
+      setTransactions(expensesRes.expenses || []); // same API but has type: income/expense
       setBudgets(budgetsRes.budgets || []);
     } catch (err) {
       console.error("Insights error:", err);
@@ -36,50 +28,48 @@ const Insights = ({ navigateTo }) => {
     }
   };
 
-  const getMonthName = () =>
-    new Date(selectedYear, selectedMonth).toLocaleString("default", {
+  const getMonthName = () => {
+    return new Date(selectedYear, selectedMonth).toLocaleString("default", {
       month: "long",
       year: "numeric",
     });
+  };
 
-  // --- Expense Breakdown by Category ---
+  // Category breakdown (income + expense)
   const calculateCategoryBreakdown = () => {
-    const monthExpenses = transactions.filter((e) => {
-      const d = new Date(e.date);
-      return (
-        e.type === "expense" &&
-        d.getMonth() === selectedMonth &&
-        d.getFullYear() === selectedYear
-      );
+    const monthTx = transactions.filter((t) => {
+      const d = new Date(t.date);
+      return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
     });
 
-    const total = monthExpenses.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+    const total = monthTx.reduce((sum, t) => sum + parseFloat(t.amount), 0);
     const categories = {};
 
-    monthExpenses.forEach((e) => {
-      const cat = e.category.toLowerCase();
-      categories[cat] = (categories[cat] || 0) + parseFloat(e.amount);
+    monthTx.forEach((t) => {
+      const cat = `${t.type}_${t.category.toLowerCase()}`; // separate income vs expense
+      categories[cat] = (categories[cat] || 0) + parseFloat(t.amount);
     });
 
     return Object.entries(categories)
       .map(([name, amount]) => ({
         name,
+        type: name.startsWith("income") ? "income" : "expense",
+        category: name.split("_")[1],
         amount,
         percentage: total > 0 ? ((amount / total) * 100).toFixed(0) : 0,
       }))
       .sort((a, b) => b.amount - a.amount);
   };
 
-  // --- Category Budgets vs Spending ---
   const getCategoryBudgets = () => {
     const currentMonthBudgets = budgets.filter(
       (b) => b.month === selectedMonth + 1 && b.year === selectedYear
     );
 
-    const monthExpenses = transactions.filter((e) => {
-      const d = new Date(e.date);
+    const monthExpenses = transactions.filter((t) => {
+      const d = new Date(t.date);
       return (
-        e.type === "expense" &&
+        t.type === "expense" &&
         d.getMonth() === selectedMonth &&
         d.getFullYear() === selectedYear
       );
@@ -99,50 +89,50 @@ const Insights = ({ navigateTo }) => {
     });
   };
 
-  // --- Monthly Trend (Income vs Expense) ---
-  const getMonthlyTrend = () => {
-    const trend = {};
-    transactions.forEach((t) => {
-      const d = new Date(t.date);
-      if (d.getFullYear() === selectedYear && d.getMonth() === selectedMonth) {
-        const day = d.getDate();
-        if (!trend[day]) trend[day] = { day, income: 0, expense: 0 };
-        if (t.type === "income") trend[day].income += parseFloat(t.amount);
-        else trend[day].expense += parseFloat(t.amount);
-      }
-    });
-    return Object.values(trend).sort((a, b) => a.day - b.day);
-  };
-
-  const getCategoryEmoji = (cat) => {
-    const emojis = {
+  const getCategoryEmoji = (type, category) => {
+    const expenseEmojis = {
       food: "🍕",
       housing: "🏠",
       transport: "⛽",
       utilities: "💡",
       entertainment: "🎮",
       healthcare: "🏥",
-      salary: "💼",
-      business: "🏢",
-      gift: "🎁",
       other: "🎯",
     };
-    return emojis[cat.toLowerCase()] || "💰";
+    const incomeEmojis = {
+      salary: "💼",
+      freelance: "💻",
+      investment: "📈",
+      business: "🏢",
+      gift: "🎁",
+      other_income: "💰",
+    };
+    return type === "income"
+      ? incomeEmojis[category] || "💰"
+      : expenseEmojis[category] || "💸";
   };
 
-  const getCategoryColor = (cat) => {
-    const colors = {
+  const getCategoryColor = (type, category) => {
+    const expenseColors = {
       housing: "#1e3a8a",
       food: "#10b981",
       transport: "#f59e0b",
       utilities: "#8b5cf6",
       entertainment: "#ec4899",
       healthcare: "#06b6d4",
-      salary: "#22c55e",
-      business: "#0ea5e9",
-      other: "#9ca3af",
+      other: "#f3f4f6",
     };
-    return colors[cat.toLowerCase()] || "#f3f4f6";
+    const incomeColors = {
+      salary: "#16a34a",
+      freelance: "#0284c7",
+      investment: "#9333ea",
+      business: "#f43f5e",
+      gift: "#eab308",
+      other_income: "#64748b",
+    };
+    return type === "income"
+      ? incomeColors[category] || "#64748b"
+      : expenseColors[category] || "#f3f4f6";
   };
 
   if (loading) {
@@ -158,105 +148,118 @@ const Insights = ({ navigateTo }) => {
 
   const breakdown = calculateCategoryBreakdown();
   const categoryBudgets = getCategoryBudgets();
-  const trend = getMonthlyTrend();
 
   return (
     <div className="h-full overflow-y-auto pb-24">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-xl font-semibold text-gray-800">Insights</h2>
-        <div>
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="mr-2 p-2 border rounded-lg"
-          >
-            {Array.from({ length: 12 }).map((_, i) => (
-              <option key={i} value={i}>
-                {new Date(0, i).toLocaleString("default", { month: "long" })}
-              </option>
-            ))}
-          </select>
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="p-2 border rounded-lg"
-          >
-            {[2023, 2024, 2025].map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
-        </div>
+        <h2 className="text-xl font-semibold text-gray-800">Budget Analytics</h2>
+        <button className="bg-gray-100 text-gray-800 border-none py-2 px-4 rounded-lg font-semibold cursor-pointer hover:bg-gray-200 transition-all">
+          Change ▼
+        </button>
       </div>
 
-      <p className="text-lg font-semibold mb-4">📅 {getMonthName()}</p>
+      <p className="text-xl font-semibold text-gray-800 mb-4">
+        This Month: {getMonthName()}
+      </p>
 
-      {/* Spending Breakdown */}
-      <div className="bg-white rounded-xl p-5 mb-5">
-        <p className="text-base text-gray-800 mb-4">Spending Breakdown</p>
+      {/* Breakdown Chart */}
+      <div className="bg-white rounded-xl p-5 mb-5 text-center">
+        <p className="text-base text-gray-800 mb-5">Income vs Expense Breakdown</p>
         {breakdown.length > 0 ? (
-          <div>
-            {breakdown.map((cat) => (
-              <div key={cat.name} className="flex justify-between mb-2">
-                <span>
-                  {getCategoryEmoji(cat.name)}{" "}
-                  {cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}
+          <>
+            <div
+              className="w-30 h-30 rounded-full mx-auto mb-5"
+              style={{
+                width: "120px",
+                height: "120px",
+                background: `conic-gradient(${breakdown
+                  .map((cat, idx) => {
+                    const prevTotal = breakdown
+                      .slice(0, idx)
+                      .reduce((sum, c) => sum + parseFloat(c.percentage), 0);
+                    const currentTotal = prevTotal + parseFloat(cat.percentage);
+                    return `${getCategoryColor(
+                      cat.type,
+                      cat.category
+                    )} ${prevTotal * 3.6}deg ${currentTotal * 3.6}deg`;
+                  })
+                  .join(", ")})`,
+              }}
+            ></div>
+            <div className="mt-5 grid grid-cols-2 gap-2">
+              {breakdown.slice(0, 6).map((cat) => (
+                <span key={cat.name} className="flex items-center text-sm">
+                  <span
+                    className="w-3 h-3 rounded-full mr-2"
+                    style={{
+                      backgroundColor: getCategoryColor(cat.type, cat.category),
+                    }}
+                  ></span>
+                  {getCategoryEmoji(cat.type, cat.category)}{" "}
+                  {cat.category.charAt(0).toUpperCase() + cat.category.slice(1)}{" "}
+                  {cat.percentage}%
                 </span>
-                <span className="text-gray-700">
-                  ${cat.amount.toFixed(2)} ({cat.percentage}%)
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         ) : (
-          <p className="text-gray-500">No expenses this month</p>
+          <p className="text-gray-500 py-8">No transaction data for this month</p>
         )}
       </div>
 
-      {/* Category Budgets */}
-      <div className="bg-white rounded-xl p-5 mb-5">
-        <p className="text-base text-gray-800 mb-4">Budgets</p>
+      {/* Category Budgets (expenses only) */}
+      <div className="bg-white border border-gray-200 rounded-xl p-5 mb-5">
+        <p className="text-base text-gray-800 mb-4">Category Budgets</p>
+
         {categoryBudgets.length > 0 ? (
-          categoryBudgets.map((item) => (
+          categoryBudgets.map((item, index) => (
             <div
               key={item.category}
-              className="flex justify-between items-center mb-2"
+              className={`flex justify-between items-center py-4 ${
+                index !== categoryBudgets.length - 1
+                  ? "border-b border-gray-100"
+                  : ""
+              }`}
             >
-              <span>
-                {getCategoryEmoji(item.category)} {item.category}
-              </span>
-              <span
-                className={
-                  item.isOverBudget ? "text-red-500" : "text-green-600"
-                }
-              >
+              <div className="flex items-center">
+                <span className="mr-2">{getCategoryEmoji("expense", item.category)}</span>
+                <span className="text-base">
+                  {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+                </span>
+              </div>
+              <span className="text-base">
                 ${item.spent.toFixed(2)} / ${item.budget.toFixed(2)}
               </span>
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs ${
+                  item.isOverBudget ? "bg-yellow-500" : "bg-green-500"
+                }`}
+              >
+                {item.isOverBudget ? "⚠️" : "✓"}
+              </div>
             </div>
           ))
         ) : (
-          <p className="text-gray-500">No budgets set this month</p>
+          <p className="text-gray-500 text-center py-4">
+            No budgets set for this month
+          </p>
         )}
       </div>
 
       {/* Monthly Trend */}
-      <div className="bg-white rounded-xl p-5">
-        <p className="text-base text-gray-800 mb-4">Income vs Expense Trend</p>
-        {trend.length > 0 ? (
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={trend}>
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="income" stroke="#22c55e" />
-              <Line type="monotone" dataKey="expense" stroke="#ef4444" />
-            </LineChart>
-          </ResponsiveContainer>
-        ) : (
-          <p className="text-gray-500">No data this month</p>
-        )}
+      <div className="bg-white rounded-xl p-5 mb-5">
+        <p className="text-base text-gray-800 mb-5">Monthly Trend</p>
+        <div
+          className="h-20 rounded-lg relative"
+          style={{
+            background:
+              "linear-gradient(to right, #22c55e 0%, #1e3a8a 50%, #ef4444 100%)",
+          }}
+        ></div>
+        <p className="text-sm text-gray-500 text-center mt-3">
+          Detailed income/expense trend visualization coming soon
+        </p>
       </div>
     </div>
   );
