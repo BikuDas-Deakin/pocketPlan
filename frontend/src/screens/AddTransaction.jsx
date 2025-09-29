@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import api from "../api/api";
 
 const AddTransaction = ({ navigateTo }) => {
+  const [transactionType, setTransactionType] = useState("expense"); // expense or income
   const [selectedCategory, setSelectedCategory] = useState("food");
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [amount, setAmount] = useState("");
@@ -10,7 +11,7 @@ const AddTransaction = ({ navigateTo }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const categories = [
+  const expenseCategories = [
     { id: "food", icon: "🍕", label: "Food" },
     { id: "housing", icon: "🏠", label: "Housing" },
     { id: "transport", icon: "⛽", label: "Transport" },
@@ -20,8 +21,18 @@ const AddTransaction = ({ navigateTo }) => {
     { id: "other", icon: "🎯", label: "Other" },
   ];
 
-  const handleSaveExpense = async () => {
-    // Validation
+  const incomeCategories = [
+    { id: "salary", icon: "💼", label: "Salary" },
+    { id: "freelance", icon: "💻", label: "Freelance" },
+    { id: "investment", icon: "📈", label: "Investment" },
+    { id: "business", icon: "🏢", label: "Business" },
+    { id: "gift", icon: "🎁", label: "Gift" },
+    { id: "other", icon: "💰", label: "Other" },
+  ];
+
+  const categories = transactionType === "expense" ? expenseCategories : incomeCategories;
+
+  const handleSaveTransaction = async () => {
     if (!amount || parseFloat(amount) <= 0) {
       setError("Please enter a valid amount");
       return;
@@ -31,24 +42,29 @@ const AddTransaction = ({ navigateTo }) => {
     setError(null);
 
     try {
-      const expenseData = {
+      const transactionData = {
         amount: parseFloat(amount),
         category: selectedCategory,
         description: description || null,
         date: date,
         payment_method: paymentMethod,
+        type: transactionType, // Add type field
       };
 
-      await api.expenses.create(expenseData);
-      
-      // Success - navigate back to dashboard
+      await api.expenses.create(transactionData);
       navigateTo("dashboard");
     } catch (err) {
-      setError(err.error || "Failed to save expense");
-      console.error("Save expense error:", err);
+      setError(err.error || "Failed to save transaction");
+      console.error("Save transaction error:", err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTypeChange = (type) => {
+    setTransactionType(type);
+    // Reset category when switching types
+    setSelectedCategory(type === "expense" ? "food" : "salary");
   };
 
   return (
@@ -62,11 +78,36 @@ const AddTransaction = ({ navigateTo }) => {
         >
           ←
         </button>
-        <h2 className="text-xl font-semibold text-gray-800">Add New Expense</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Add Transaction</h2>
         <div></div>
       </div>
 
-      {/* Error Message */}
+      {/* Transaction Type Toggle */}
+      <div className="flex gap-2 mb-5">
+        <button
+          onClick={() => handleTypeChange("expense")}
+          disabled={loading}
+          className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+            transactionType === "expense"
+              ? "bg-red-500 text-white"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+          }`}
+        >
+          💸 Expense
+        </button>
+        <button
+          onClick={() => handleTypeChange("income")}
+          disabled={loading}
+          className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+            transactionType === "income"
+              ? "bg-green-500 text-white"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+          }`}
+        >
+          💰 Income
+        </button>
+      </div>
+
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
           {error}
@@ -76,9 +117,13 @@ const AddTransaction = ({ navigateTo }) => {
       {/* Amount Input */}
       <div className="mb-5">
         <p className="text-base text-gray-800 mb-2">Amount:</p>
-        <div className="bg-gray-100 rounded-xl p-8 text-center">
+        <div className={`rounded-xl p-8 text-center ${
+          transactionType === "expense" ? "bg-red-50" : "bg-green-50"
+        }`}>
           <div className="text-3xl font-bold">
-            <span className="text-blue-900">$</span>
+            <span className={transactionType === "expense" ? "text-red-600" : "text-green-600"}>
+              {transactionType === "expense" ? "-" : "+"}$
+            </span>
             <input
               type="number"
               value={amount}
@@ -102,7 +147,9 @@ const AddTransaction = ({ navigateTo }) => {
               key={category.id}
               className={`p-6 bg-white border-2 rounded-lg text-center cursor-pointer transition-all ${
                 selectedCategory === category.id
-                  ? "border-blue-900 bg-blue-50"
+                  ? transactionType === "expense"
+                    ? "border-red-500 bg-red-50"
+                    : "border-green-500 bg-green-50"
                   : "border-gray-200 hover:border-blue-900 hover:bg-blue-50"
               } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={() => !loading && setSelectedCategory(category.id)}
@@ -186,11 +233,15 @@ const AddTransaction = ({ navigateTo }) => {
 
       {/* Save Button */}
       <button
-        onClick={handleSaveExpense}
+        onClick={handleSaveTransaction}
         disabled={loading || !amount}
-        className="w-full bg-green-500 text-white border-none p-4 rounded-lg font-semibold cursor-pointer hover:bg-green-600 transition-all hover:-translate-y-0.5 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none"
+        className={`w-full text-white border-none p-4 rounded-lg font-semibold cursor-pointer transition-all hover:-translate-y-0.5 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none ${
+          transactionType === "expense"
+            ? "bg-red-500 hover:bg-red-600"
+            : "bg-green-500 hover:bg-green-600"
+        }`}
       >
-        {loading ? "SAVING..." : "SAVE EXPENSE"}
+        {loading ? "SAVING..." : `SAVE ${transactionType.toUpperCase()}`}
       </button>
     </div>
   );

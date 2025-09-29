@@ -128,11 +128,19 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
 });
 
 // --- Expenses ---
+// Replace your expenses routes with these updated versions
+
+// --- Expenses ---
 app.get('/api/expenses', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM expenses WHERE user_id=$1 ORDER BY date DESC', [req.user.userId]);
+    const result = await pool.query(
+      'SELECT * FROM expenses WHERE user_id=$1 ORDER BY date DESC', 
+      [req.user.userId]
+    );
     res.json({ expenses: result.rows });
-  } catch (err) { res.status(500).json({ error: 'Error fetching expenses' }); }
+  } catch (err) { 
+    res.status(500).json({ error: 'Error fetching expenses' }); 
+  }
 });
 
 app.get('/api/expenses/range', authenticateToken, async (req, res) => {
@@ -143,58 +151,110 @@ app.get('/api/expenses/range', authenticateToken, async (req, res) => {
       [req.user.userId, startDate, endDate]
     );
     res.json({ expenses: result.rows });
-  } catch (err) { res.status(500).json({ error: 'Error fetching expenses by range' }); }
+  } catch (err) { 
+    res.status(500).json({ error: 'Error fetching expenses by range' }); 
+  }
 });
 
 app.post('/api/expenses', authenticateToken, async (req, res) => {
   try {
-    const { amount, category, description, date, payment_method } = req.body;
+    const { amount, category, description, date, payment_method, type } = req.body;
     if (!amount || !category) return res.status(400).json({ error: 'Amount and category required' });
 
     const result = await pool.query(
-      `INSERT INTO expenses (user_id, amount, category, description, date, payment_method) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-      [req.user.userId, amount, category, description, date || new Date(), payment_method || 'cash']
+      `INSERT INTO expenses (user_id, amount, category, description, date, payment_method, type) 
+       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+      [
+        req.user.userId, 
+        amount, 
+        category, 
+        description, 
+        date || new Date(), 
+        payment_method || 'cash',
+        type || 'expense'  // Default to 'expense' if not provided
+      ]
     );
-    res.status(201).json({ message: 'Expense created', expense: result.rows[0] });
-  } catch (err) { res.status(500).json({ error: 'Error creating expense' }); }
+    res.status(201).json({ message: 'Transaction created', expense: result.rows[0] });
+  } catch (err) { 
+    console.error('Error creating transaction:', err);
+    res.status(500).json({ error: 'Error creating transaction' }); 
+  }
 });
 
 app.put('/api/expenses/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { amount, category, description, date, payment_method } = req.body;
+    const { amount, category, description, date, payment_method, type } = req.body;
 
     const result = await pool.query(
-      `UPDATE expenses SET amount=$1, category=$2, description=$3, date=$4, payment_method=$5 WHERE id=$6 AND user_id=$7 RETURNING *`,
-      [amount, category, description, date, payment_method, id, req.user.userId]
+      `UPDATE expenses 
+       SET amount=$1, category=$2, description=$3, date=$4, payment_method=$5, type=$6 
+       WHERE id=$7 AND user_id=$8 RETURNING *`,
+      [amount, category, description, date, payment_method, type || 'expense', id, req.user.userId]
     );
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Expense not found' });
-    res.json({ message: 'Expense updated', expense: result.rows[0] });
-  } catch (err) { res.status(500).json({ error: 'Error updating expense' }); }
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Transaction not found' });
+    res.json({ message: 'Transaction updated', expense: result.rows[0] });
+  } catch (err) { 
+    res.status(500).json({ error: 'Error updating transaction' }); 
+  }
 });
 
 app.delete('/api/expenses/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query('DELETE FROM expenses WHERE id=$1 AND user_id=$2 RETURNING *', [id, req.user.userId]);
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Expense not found' });
-    res.json({ message: 'Expense deleted' });
-  } catch (err) { res.status(500).json({ error: 'Error deleting expense' }); }
+    const result = await pool.query(
+      'DELETE FROM expenses WHERE id=$1 AND user_id=$2 RETURNING *', 
+      [id, req.user.userId]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Transaction not found' });
+    res.json({ message: 'Transaction deleted' });
+  } catch (err) { 
+    res.status(500).json({ error: 'Error deleting transaction' }); 
+  }
 });
 
-// Expense stats
+// Expense stats - updated to handle income/expense types
 app.get('/api/expenses/stats/summary', authenticateToken, async (req, res) => {
   try {
     const { month, year } = req.query;
     const m = month || new Date().getMonth() + 1;
     const y = year || new Date().getFullYear();
 
-    const result = await pool.query(
-      `SELECT category, SUM(amount) AS total, COUNT(*) AS count FROM expenses WHERE user_id=$1 AND EXTRACT(MONTH FROM date)=$2 AND EXTRACT(YEAR FROM date)=$3 GROUP BY category`,
+    // Get category breakdown
+    const categoryStats = await pool.query(
+      `SELECT category, type, SUM(amount) AS total, COUNT(*) AS count 
+       FROM expenses 
+       WHERE user_id=$1 AND EXTRACT(MONTH FROM date)=$2 AND EXTRACT(YEAR FROM date)=$3 
+       GROUP BY category, type`,
       [req.user.userId, m, y]
     );
-    res.json({ statistics: result.rows });
-  } catch (err) { res.status(500).json({ error: 'Error fetching stats' }); }
+
+    // Get total income and expenses
+    const totals = await pool.query(
+      `SELECT 
+        type,
+        SUM(amount) as total
+       FROM expenses 
+       WHERE user_id=$1 AND EXTRACT(MONTH FROM date)=$2 AND EXTRACT(YEAR FROM date)=$3 
+       GROUP BY type`,
+      [req.user.userId, m, y]
+    );
+
+    const totalIncome = totals.rows.find(r => r.type === 'income')?.total || 0;
+    const totalExpenses = totals.rows.find(r => r.type === 'expense')?.total || 0;
+
+    res.json({ 
+      statistics: categoryStats.rows,
+      summary: {
+        totalIncome: parseFloat(totalIncome),
+        totalExpenses: parseFloat(totalExpenses),
+        netIncome: parseFloat(totalIncome) - parseFloat(totalExpenses)
+      }
+    });
+  } catch (err) { 
+    console.error('Error fetching stats:', err);
+    res.status(500).json({ error: 'Error fetching stats' }); 
+  }
 });
 
 // --- Budgets ---

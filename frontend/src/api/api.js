@@ -64,13 +64,15 @@ export const expensesAPI = {
     });
   },
 
-  // Create new expense
+  // Create new expense/income
   create: async (expenseData) => {
+    // expenseData should include: amount, category, description, date, payment_method, type
     return apiClient.post('/expenses', expenseData);
   },
 
-  // Update expense
+  // Update expense/income
   update: async (id, expenseData) => {
+    // expenseData should include type as well
     return apiClient.put(`/expenses/${id}`, expenseData);
   },
 
@@ -79,7 +81,7 @@ export const expensesAPI = {
     return apiClient.delete(`/expenses/${id}`);
   },
 
-  // Get expense statistics/summary
+  // Get expense statistics/summary (handles income + expenses now)
   getStatsSummary: async (month, year) => {
     return apiClient.get('/expenses/stats/summary', {
       params: { month, year }
