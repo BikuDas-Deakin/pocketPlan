@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PocketPlan Mobile App - Interactive Prototype</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .prototype-container {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .prototype-header {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .prototype-header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .prototype-header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 390px;
+      height: 844px;
+      background: white;
+      border-radius: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+
+    .screen {
+      display: none;
+      height: 100%;
+      overflow-y: auto;
+      padding-bottom: 100px;
+    }
+
+    .screen.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .heading-large {
+      font-size: 24px;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .heading-medium {
+      font-size: 20px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .body {
+      font-size: 16px;
+      color: #111827;
+    }
+
+    .caption {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .primary-blue {
+      color: #1e3a8a;
+    }
+
+    .secondary-green {
+      color: #10b981;
+    }
+
+    .text-medium {
+      color: #6b7280;
+    }
+
+    .btn-primary {
+      background: #1e3a8a;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+      font-size: 16px;
+    }
+
+    .btn-primary:hover {
+      background: #1e40af;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #111827;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+      font-size: 16px;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+      transform: translateY(-2px);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+      background: white;
+      transition: border-color 0.2s;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #1e3a8a;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #f3f4f6;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #10b981;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #6b7280;
+    }
+
+    .nav-item:hover {
+      transform: scale(1.1);
+    }
+
+    .nav-item.active {
+      color: #1e3a8a;
+    }
+
+    .nav-icon {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .nav-label {
+      font-size: 12px;
+    }
+
+    .add-btn {
+      width: 56px;
+      height: 56px;
+      background: #1e3a8a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+    }
+
+    .add-btn:hover {
+      transform: scale(1.15) rotate(90deg);
+      box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+    }
+
+    .welcome-screen {
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    .logo {
+      color: #1e3a8a;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      margin-bottom: 40px;
+    }
+
+    .form-group {
+      margin: 20px 0;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    .notification-badge {
+      width: 40px;
+      height: 40px;
+      background: #f3f4f6;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .notification-badge:hover {
+      background: #e5e7eb;
+      transform: scale(1.1);
+    }
+
+    .budget-overview {
+      background: linear-gradient(135deg, #f0f7ff, #e6f3ff);
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 600;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .action-primary {
+      background: #1e3a8a;
+      color: white;
+    }
+
+    .action-secondary {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .transactions-list {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 10px;
+      color: #1e3a8a;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .amount-input {
+      background: #f3f4f6;
+      border-radius: 12px;
+      padding: 30px 20px;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .amount-display {
+      font-size: 32px;
+      font-weight: bold;
+      color: #1e3a8a;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .category-btn {
+      padding: 30px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .category-btn:hover,
+    .category-btn.selected {
+      border-color: #1e3a8a;
+      background: #f0f7ff;
+      transform: scale(1.05);
+    }
+
+    .donut-chart {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: conic-gradient(#1e3a8a 0deg 162deg,
+          #10b981 162deg 252deg,
+          #f59e0b 252deg 324deg,
+          #e5e7eb 324deg 360deg);
+      margin: 20px auto;
+    }
+
+    .tip-card {
+      background: white;
+      border: 2px solid #1e3a8a;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .tip-featured {
+      background: linear-gradient(135deg, #f0f7ff, #e6f3ff);
+    }
+
+    .savings-tracker {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .profile-section {
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #f0f7ff, #e6f3ff);
+      border-radius: 12px;
+      margin: 20px 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .profile-section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-avatar {
+      width: 50px;
+      height: 50px;
+      background: #1e3a8a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      margin-right: 15px;
+    }
+
+    .settings-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: white;
+      border-bottom: 1px solid #f3f4f6;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .settings-item:hover {
+      background: #f9fafb;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(400px); }
+      to { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-container">
+    <div class="prototype-header">
+      <h1>PocketPlan</h1>
+      <p>Interactive High-Fidelity Prototype</p>
+    </div>
+
+    <div class="phone-frame">
+      <!-- Screen 1: Welcome/Login -->
+      <div class="screen active" id="welcome">
+        <div class="welcome-screen">
+          <h1 class="heading-large logo">PocketPlan</h1>
+          <p class="caption subtitle">Smart Money Management for Everyone</p>
+
+          <div class="form-group">
+            <input type="email" class="input-field" placeholder="Email or Phone" id="email">
+          </div>
+
+          <div class="form-group">
+            <input type="password" class="input-field" placeholder="Password" id="password">
+          </div>
+
+          <div class="form-group">
+            <button class="btn-primary" onclick="navigateTo('dashboard')">LOGIN</button>
+          </div>
+
+          <div style="margin-top: 30px;">
+            <p class="caption">Don't have an account? <span class="primary-blue" style="cursor: pointer; font-weight: 600;">Sign Up</span></p>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <button class="btn-secondary" onclick="navigateTo('dashboard')">Continue as Guest</button>
+          </div>
+
+          <div style="margin-top: 40px; background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+            <p class="caption">💡 Try all features without signup - your data stays private on your device</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 2: Dashboard -->
+      <div class="screen" id="dashboard">
+        <div class="dashboard-header">
+          <h2 class="heading-medium">Good morning, Alex!</h2>
+          <div class="notification-badge" onclick="showNotification('You have 3 new tips!')">🔔</div>
+        </div>
+
+        <div class="budget-overview">
+          <p class="body">Monthly Budget</p>
+          <h3 class="heading-medium" style="color: #1e3a8a; margin: 10px 0;">$2,847 / $3,200</h3>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 89%"></div>
+          </div>
+          <p class="caption secondary-green" style="margin-top: 10px;">$353 remaining (11%)</p>
+        </div>
+
+        <div>
+          <p class="body" style="margin-bottom: 15px;">Quick Actions</p>
+          <div class="quick-actions">
+            <div class="action-btn action-primary" onclick="navigateTo('addTransaction')">+ Add Expense</div>
+            <div class="action-btn action-secondary" onclick="navigateTo('insights')">📊 Analytics</div>
+          </div>
+        </div>
+
+        <div>
+          <p class="body" style="margin-bottom: 15px;">Recent Transactions</p>
+          <div class="transactions-list">
+            <div class="transaction-item">
+              <span>🍕 Lunch - Pizza Place</span>
+              <span style="color: #ef4444; font-weight: 600;">-$12.50</span>
+            </div>
+            <div class="transaction-item">
+              <span>⛽ Fuel - Shell Station</span>
+              <span style="color: #ef4444; font-weight: 600;">-$65.00</span>
+            </div>
+            <div class="transaction-item">
+              <span>🏠 Rent Payment</span>
+              <span style="color: #ef4444; font-weight: 600;">-$800.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active" onclick="setActiveTab(0); navigateTo('dashboard')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Home</div>
+          </div>
+          <div class="nav-item" onclick="setActiveTab(1); navigateTo('insights')">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Stats</div>
+          </div>
+          <div class="add-btn" onclick="navigateTo('addTransaction')">+</div>
+          <div class="nav-item" onclick="setActiveTab(3); navigateTo('tips')">
+            <div class="nav-icon">💡</div>
+            <div class="nav-label">Tips</div>
+          </div>
+          <div class="nav-item" onclick="setActiveTab(4); navigateTo('more')">
+            <div class="nav-icon">⋯</div>
+            <div class="nav-label">More</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 3: Add Transaction -->
+      <div class="screen" id="addTransaction">
+        <div class="header">
+          <button class="back-btn" onclick="navigateTo('dashboard')">←</button>
+          <h2 class="heading-medium">Add New Expense</h2>
+          <div></div>
+        </div>
+
+        <div>
+          <p class="body">Amount:</p>
+          <div class="amount-input">
+            <div class="amount-display">$<input type="number" style="border: none; background: transparent; font-size: 32px; font-weight: bold; color: #1e3a8a; width: 150px;" placeholder="0.00" id="expenseAmount"></div>
+          </div>
+        </div>
+
+        <div>
+          <p class="body" style="margin-bottom: 15px;">Category:</p>
+          <div class="category-grid">
+            <div class="category-btn selected" onclick="selectCategory(this)">
+              <div style="font-size: 28px; margin-bottom: 8px;">🍕</div>
+              <div>Food</div>
+            </div>
+            <div class="category-btn" onclick="selectCategory(this)">
+              <div style="font-size: 28px; margin-bottom: 8px;">🏠</div>
+              <div>Housing</div>
+            </div>
+            <div class="category-btn" onclick="selectCategory(this)">
+              <div style="font-size: 28px; margin-bottom: 8px;">⛽</div>
+              <div>Transport</div>
+            </div>
+            <div class="category-btn" onclick="selectCategory(this)">
+              <div style="font-size: 28px; margin-bottom: 8px;">🎯</div>
+              <div>Other</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <p class="body">Description (optional):</p>
+          <input type="text" class="input-field" placeholder="Add notes..." id="expenseDescription">
+        </div>
+
+        <button class="btn-primary" style="background: #10b981; margin-top: 30px;" onclick="saveExpense()">SAVE EXPENSE</button>
+
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="setActiveTab(0); navigateTo('dashboard')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Home</div>
+          </div>
+          <div class="nav-item" onclick="setActiveTab(1); navigateTo('insights')">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Stats</div>
+          </div>
+          <div class="add-btn" onclick="navigateTo('addTransaction')">+</div>
+          <div class="nav-item" onclick="setActiveTab(3); navigateTo('tips')">
+            <div class="nav-icon">💡</div>
+            <div class="nav-label">Tips</div>
+          </div>
+          <div class="nav-item" onclick="setActiveTab(4); navigateTo('more')">
+            <div class="nav-icon">⋯</div>
+            <div class="nav-label">More</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 4: Insights -->
+      <div class="screen" id="insights">
+        <div class="header">
+          <h2 class="heading-medium">Budget Analytics</h2>
+        </div>
+
+        <p class="heading-medium" style="margin-bottom: 20px;">This Month: December 2024</p>
+
+        <div class="card" style="text-align: center;">
+          <p class="body" style="margin-bottom: 20px;">Spending Breakdown</p>
+          <div class="donut-chart"></div>
+          <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left;">
+            <span style="display: flex; align-items: center; font-size: 14px;">
+              <span style="width: 12px; height: 12px; background: #1e3a8a; border-radius: 50%; margin-right: 8px;"></span>Housing 45%
+            </span>
+            <span style="display: flex; align-items: center; font-size: 14px;">
+              <span style="width: 12px; height: 12px; background: #10b981; border-radius: 50%; margin-right: 8px;"></span>Food 25%
+            </span>
+            <span style="display: flex; align-items: center; font-size: 14px;">
+              <span style="width: 12px; height: 12px; background: #f59e0b; border-radius: 50%; margin-right: 8px;"></span>Transport 20%
+            </span>
+            <span style="display: flex; align-items: center; font-size: 14px;">
+              <span style="width: 12px; height: 12px; background: #e5e7eb; border-radius: 50%; margin-right: 8px;"></span>Other 10%
+            </span>
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="body" style="margin-bottom: 15px; font-weight: 600;">Category Status</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6;">
+            <div style="display: flex; align-items: center;">
+              <span style="margin-right: 10px;">🏠</span>
+              <span>Housing</span>
+            </div>
+            <span style="font-size: 14px;">$1,440 / $1,500</span>
+            <div style="width: 24px; height: 24px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">✓</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6;">
+            <div style="display: flex; align-items: center;">
+              <span style="margin-right: 10px;">🍕</span>
+              <span>Food</span>
+            </div>
+            <span style="font-size: 14px;">$480 / $600</span>
+            <div style="width: 24px; height: 24px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">✓</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+            <div style="display: flex; align-items: center;">
+              <span style="margin-right: 10px;">⛽</span>
+              <span>Transport</span>
+            </div>
+            <span style="font-size: 14px;">$520 / $500</span>
+            <div style="width: 24px; height: 24px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">⚠</div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="setActiveTab(0); navigateTo('dashboard')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Home</div>
+          </div>
+          <div class="nav-item active" onclick="setActiveTab(1); navigateTo('insights')">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Stats</div>
+          </div>
+          <div class="add-btn" onclick="navigateTo('addTransaction')">+</div>
+          <div class="nav-item" onclick="setActiveTab(3); navigateTo('tips')">
+            <div class="nav-icon">💡</div>
+            <div class="nav-label">Tips</div>
+          </div>
+          <div class="nav-item" onclick="setActiveTab(4); navigateTo('more')">
+            <div class="nav-icon">⋯</div>
+            <div class="nav-label">More</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 5: Tips -->
+      <div class="screen" id="tips">
+        <div class="header">
+          <h2 class="heading-medium">Smart Savings Tips</h2>
+        </div>
+
+        <p class="body primary-blue" style="margin-bottom: 20px;">🤖 Personalized for You</p>
+
+        <div class="tip-card tip-featured">
+          <p class="body primary-blue">💡 Top Suggestion</p>
+          <h3 class="heading-medium" style="margin: 10px 0;">Switch Energy Plan</h3>
+          <p class="body secondary-green" style="font-weight: 600;">Save up to $45/month</p>
+          <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn-primary" style="width: auto; padding: 10px 20px;" onclick="showNotification('Opening energy plan comparison...')">Learn More</button>
+            <button class="btn-secondary" style="width: auto; padding: 10px 20px;">Skip</button>
+          </div>
+        </div>
+
+        <p class="body" style="margin: 30px 0 15px 0; font-weight: 600;">Other Opportunities:</p>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <p class="body">🚗 Fuel: Try GasBuddy app</p>
+              <p class="caption secondary-green">Save ~$8/week</p>
+            </div>
+            <span style="color: #6b7280; font-size: 18px;">›</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <p class="body">🛒 Groceries: Plan weekly meals</p>
+              <p class="caption secondary-green">Save ~$25/week</p>
+            </div>
+            <span style="color: #6b7280; font-size: 18px;">›</span>
+          </div>
+        </div>
+
+        <div class="savings-tracker">
+          <p class="body">Potential Monthly Savings</p>
+          <h2 class="heading-large secondary-green" style="margin: 10px 0;">$127</h2>
+          <p class="caption text-medium">if you apply all tips</p>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="setActiveTab(0); navigateTo('dashboard')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Home</div>
+          </div>
+          <div class="nav-item" onclick="setActiveTab(1); navigateTo('insights')">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Stats</div>
+          </div>
+          <div class="add-btn" onclick="navigateTo('addTransaction')">+</div>
+          <div class="nav-item active" onclick="setActiveTab(3); navigateTo('tips')">
+            <div class="nav-icon">💡</div>
+            <div class="nav-label">Tips</div>
+          </div>
+          <div class="nav-item" onclick="setActiveTab(4); navigateTo('more')">
+            <div class="nav-icon">⋯</div>
+            <div class="nav-label">More</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 6: More/Settings -->
+      <div class="screen" id="more">
+        <div class="header">
+          <h2 class="heading-medium">More</h2>
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-avatar">A</div>
+          <div>
+            <p class="body">Alex Johnson</p>
+            <p class="caption secondary-green">Premium Member</p>
+          </div>
+          <span style="margin-left: auto; color: #6b7280; font-size: 18px;">›</span>
+        </div>
+
+        <div style="margin: 30px 0;">
+          <p class="body text-medium" style="margin-bottom: 15px;">Account</p>
+          <div style="background: white; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;">
+            <div class="settings-item">
+              <span>🔒 Privacy & Security</span>
+              <span style="color: #6b7280; font-size: 18px;">›</span>
+            </div>
+            <div class="settings-item">
+              <span>💾 Export Data</span>
+              <span style="color: #6b7280; font-size: 18px;">›</span>
+            </div>
+            <div class="settings-item">
+              <span>🔔 Notifications</span>
+              <span style="color: #6b7280; font-size: 18px;">›</span>
+            </div>
+            <div class="settings-item" onclick="navigateTo('government')">
+              <span>🏛️ Government Benefits</span>
+              <span style="color: #6b7280; font-size: 18px;">›</span>
+            </div>
+            <div class="settings-item" style="border-bottom: none;">
+              <span>👥 Community Forum</span>
+              <span style="color: #6b7280; font-size: 18px;">›</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin: 30px 0;">
+          <p class="body text-medium" style="margin-bottom: 15px;">Support</p>
+          <div style="background: white; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;">
+            <div class="settings-item">
+              <span>❓ Help & FAQ</span>
+              <span style="color: #6b7280; font-size: 18px;">›</span>
+            </div>
+            <div class="settings-item">
+              <span>📧 Contact Support</span>
+              <span style="color: #6b7280; font-size: 18px;">›</span>
+            </div>
+            <div class="settings-item" style="border-bottom: none;">
+              <span>⭐ Rate App</span>
+              <span style="color: #6b7280; font-size: 18px;">›</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+          <p class="caption text-medium">Version 1.0.0</p>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="setActiveTab(0); navigateTo('dashboard')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Home</div>
+          </div>
+          <div class="nav-item" onclick="setActiveTab(1); navigateTo('insights')">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Stats</div>
+          </div>
+          <div class="add-btn" onclick="navigateTo('addTransaction')">+</div>
+          <div class="nav-item" onclick="setActiveTab(3); navigateTo('tips')">
+            <div class="nav-icon">💡</div>
+            <div class="nav-label">Tips</div>
+          </div>
+          <div class="nav-item active" onclick="setActiveTab(4); navigateTo('more')">
+            <div class="nav-icon">⋯</div>
+            <div class="nav-label">More</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 7: Government Support -->
+      <div class="screen" id="government">
+        <div class="header">
+          <button class="back-btn" onclick="navigateTo('more')">←</button>
+          <h2 class="heading-medium">Support & Benefits</h2>
+          <div></div>
+        </div>
+
+        <h3 class="heading-medium primary-blue">🏛️ Available For You</h3>
+        <p class="body text-medium" style="margin-bottom: 20px;">Based on your profile and location:</p>
+
+        <div class="card" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981;">
+          <p class="body primary-blue">⚡ Energy Rebate</p>
+          <h3 class="heading-medium secondary-green" style="margin: 10px 0;">Up to $400/year</h3>
+          <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn-primary" style="background: #10b981; width: auto; padding: 8px 20px;" onclick="showNotification('Opening application form...')">Apply Now</button>
+            <button class="btn-secondary" style="width: auto; padding: 8px 20px;">Learn More</button>
+          </div>
+        </div>
+
+        <p class="body" style="margin: 30px 0 15px 0; font-weight: 600;">Other Programs You May Qualify For:</p>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <p class="body">🩺 Healthcare Subsidy</p>
+              <p class="caption text-medium">Medicare benefits check</p>
+            </div>
+            <span style="color: #1e3a8a; font-weight: 600;">Check ›</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <p class="body">🏠 Housing Assistance</p>
+              <p class="caption text-medium">Rent and mortgage support</p>
+            </div>
+            <span style="color: #1e3a8a; font-weight: 600;">Check ›</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <p class="body">🚌 Transport Concessions</p>
+              <p class="caption text-medium">Public transport discounts</p>
+            </div>
+            <span style="color: #1e3a8a; font-weight: 600;">Check ›</span>
+          </div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #f0f7ff, #e6f3ff); border-radius: 12px; padding: 20px; margin: 20px 0;">
+          <p class="body primary-blue">📋 Benefits Eligibility Checker</p>
+          <p class="caption" style="margin: 10px 0; color: #111827;">Answer a few questions to discover all benefits you qualify for</p>
+          <button class="btn-primary" style="width: auto; padding: 10px 25px; margin-top: 10px;" onclick="showNotification('Starting eligibility check...')">Start Check</button>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="setActiveTab(0); navigateTo('dashboard')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Home</div>
+          </div>
+          <div class="nav-item" onclick="setActiveTab(1); navigateTo('insights')">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Stats</div>
+          </div>
+          <div class="add-btn" onclick="navigateTo('addTransaction')">+</div>
+          <div class="nav-item" onclick="setActiveTab(3); navigateTo('tips')">
+            <div class="nav-icon">💡</div>
+            <div class="nav-label">Tips</div>
+          </div>
+          <div class="nav-item active" onclick="setActiveTab(4); navigateTo('more')">
+            <div class="nav-icon">⋯</div>
+            <div class="nav-label">More</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div class="notification" id="notification"></div>
+
+  <script>
+    let currentScreen = 'welcome';
+    let selectedCategory = 'Food';
+
+    function navigateTo(screenId) {
+      // Hide all screens
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+
+      // Show selected screen
+      document.getElementById(screenId).classList.add('active');
+      currentScreen = screenId;
+
+      // Scroll to top
+      document.getElementById(screenId).scrollTop = 0;
+    }
+
+    function setActiveTab(index) {
+      // Remove active class from all nav items
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // Add active class to selected tab
+      const navItems = document.querySelectorAll('.nav-item');
+      if (navItems[index]) {
+        navItems[index].classList.add('active');
+      }
+    }
+
+    function selectCategory(element) {
+      // Remove selected class from all categories
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+
+      // Add selected class to clicked category
+      element.classList.add('selected');
+      selectedCategory = element.textContent.trim();
+    }
+
+    function saveExpense() {
+      const amount = document.getElementById('expenseAmount').value;
+      const description = document.getElementById('expenseDescription').value;
+
+      if (!amount || parseFloat(amount) <= 0) {
+        showNotification('Please enter a valid amount');
+        return;
+      }
+
+      showNotification(`Expense saved: ${amount} for ${selectedCategory}`);
+      
+      // Reset form
+      document.getElementById('expenseAmount').value = '';
+      document.getElementById('expenseDescription').value = '';
+
+      // Navigate back to dashboard after short delay
+      setTimeout(() => {
+        navigateTo('dashboard');
+        setActiveTab(0);
+      }, 1500);
+    }
+
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.classList.add('show');
+
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Initialize - show welcome screen
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('PocketPlan Prototype Loaded');
+    });
+  </script>
+</body>
+</html>
